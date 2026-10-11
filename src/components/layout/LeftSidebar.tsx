@@ -27,7 +27,8 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ isHealthy }) => {
   };
 
   return (
-    <aside className="w-16 xl:w-64 flex-shrink-0 flex flex-col justify-between h-[calc(100vh-2rem)] sticky top-4 py-3 select-none">
+    <aside className="w-16 xl:w-64 flex-shrink-0 flex flex-col justify-between h-[calc(100vh-3rem)] sticky top-6 select-none">
+
       <div className="space-y-6">
         {/* Brand Logo */}
         <Link

@@ -86,9 +86,10 @@ export const AppLayout: React.FC = () => {
       {/* Main 3-Column Twitter Layout Container */}
       <div className="max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-6 flex justify-center flex-1">
         {/* Left Column: Navigation Sidebar */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block flex-shrink-0 pr-6 py-6">
           <LeftSidebar isHealthy={isHealthy} />
         </div>
+
 
         {/* Center Column: Feed / Profile Stream */}
         <main className="flex-1 min-w-0 max-w-2xl border-x border-zinc-900 min-h-screen pb-20 lg:pb-8">
