@@ -111,7 +111,14 @@ export const usersApi = {
 
     const lookupPromise = (async () => {
       try {
-        // Query followers and following for target user
+        // Query direct public user endpoint first
+        const directRes = await apiClient.get<User>(`/api/v1/users/${userId}`).catch(() => null);
+        if (directRes?.data) {
+          usersApi.registerCachedUser(directRes.data);
+          return directRes.data;
+        }
+
+        // Fallback: Query followers and following for target user
         const [followers, following] = await Promise.all([
           usersApi.getFollowers(userId, 1, 50).catch(() => null),
           usersApi.getFollowing(userId, 1, 50).catch(() => null),
@@ -128,6 +135,7 @@ export const usersApi = {
         if (targetUserInCache && targetUserInCache.username !== 'User') {
           return targetUserInCache;
         }
+
 
         // Also inspect target user's posts for comments/likes containing their user profile
         const userPosts = await apiClient

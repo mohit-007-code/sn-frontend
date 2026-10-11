@@ -28,13 +28,23 @@ import {
 export const ProfilePage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const navigate = useNavigate();
+  const { success: toastSuccess, error: toastError } = useToast();
 
   const isOwnProfile = !id || id === user?.id;
   const targetUserId = id || user?.id;
 
+  // If attempting to visit own profile (/profile) while logged out, redirect to login
+  useEffect(() => {
+    if (!id && !isAuthenticated && !isAuthLoading) {
+      navigate('/login');
+    }
+  }, [id, isAuthenticated, isAuthLoading, navigate]);
+
   const [targetUser, setTargetUser] = useState<User | FollowUserItem | null>(
     isOwnProfile ? user : (targetUserId ? usersApi.getCachedUser(targetUserId) || null : null)
   );
+
   const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(!isOwnProfile);
   const [profileError, setProfileError] = useState<string | null>(null);
 
@@ -54,8 +64,6 @@ export const ProfilePage: React.FC = () => {
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const navigate = useNavigate();
-  const { success: toastSuccess, error: toastError } = useToast();
 
   // Load target user profile and follow data
   useEffect(() => {
@@ -264,9 +272,31 @@ export const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Twitter-style Sticky Top Header with Back button and user post count */}
+      <div className="sticky top-0 z-30 bg-black/85 backdrop-blur-md px-4 py-2 border-b border-zinc-900 flex items-center gap-5 -mx-4 sm:-mx-6 -mt-6 mb-4">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-full hover:bg-zinc-900 text-zinc-300 hover:text-white transition-colors"
+          title="Back"
+          aria-label="Back"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div>
+          <h2 className="text-base sm:text-lg font-bold text-white leading-tight">
+            {displayUser.profile?.full_name || displayUser.username}
+          </h2>
+          <p className="text-xs text-zinc-500 font-mono">
+            {postsResponse?.total ?? 0} {postsResponse?.total === 1 ? 'post' : 'posts'}
+          </p>
+        </div>
+      </div>
+
       {/* Profile Header */}
       <ProfileHeader
+
         user={displayUser}
         isOwnProfile={isOwnProfile}
         followerCount={followerCount}
@@ -274,10 +304,23 @@ export const ProfilePage: React.FC = () => {
         isFollowing={isFollowing}
         isFollowLoading={isFollowLoading}
         onFollowToggle={handleFollowToggle}
-        onFollowersClick={() => setFollowModalType('followers')}
-        onFollowingClick={() => setFollowModalType('following')}
+        onFollowersClick={() => {
+          if (!isAuthenticated) {
+            setAuthPromptMessage('Please log in or register to view followers.');
+            return;
+          }
+          setFollowModalType('followers');
+        }}
+        onFollowingClick={() => {
+          if (!isAuthenticated) {
+            setAuthPromptMessage('Please log in or register to view following list.');
+            return;
+          }
+          setFollowModalType('following');
+        }}
         onEditClick={isOwnProfile ? () => setIsEditProfileOpen(true) : undefined}
       />
+
 
       {/* Posts Section */}
       <section className="space-y-6">

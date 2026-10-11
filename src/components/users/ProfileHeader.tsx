@@ -145,12 +145,13 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
           {/* Metadata chips */}
           <div className="flex flex-wrap items-center gap-y-2 gap-x-5 pt-1 text-xs text-zinc-400">
-            {user.email && (
+            {isOwnProfile && user.email && (
               <div className="flex items-center gap-1.5">
                 <Mail className="w-3.5 h-3.5 text-zinc-400" />
                 <span>{user.email}</span>
               </div>
             )}
+
 
             {user.created_at && (
               <div className="flex items-center gap-1.5">

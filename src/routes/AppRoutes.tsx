@@ -18,18 +18,19 @@ export const AppRoutes: React.FC = () => {
     <Routes>
       {/* Main App Layout */}
       <Route element={<AppLayout />}>
-        {/* Public Feed (Always first page /) */}
+        {/* Public Feed & Public Profiles */}
         <Route path="/" element={<FeedPage />} />
         <Route path="/posts/:postId" element={<PostPage />} />
+        <Route path="/profile/:id" element={<ProfilePage />} />
 
         {/* Authenticated / Protected App Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/posts/create" element={<CreatePostPage />} />
           <Route path="/posts/:postId/edit" element={<EditPostPage />} />
         </Route>
       </Route>
+
 
       {/* Public Auth Routes */}
       <Route element={<PublicRoute />}>

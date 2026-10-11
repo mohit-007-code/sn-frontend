@@ -69,16 +69,13 @@ export const PostComments: React.FC<PostCommentsProps> = ({
   }, [postId, page, toastError]);
 
   const handleAuthorClick = (authorId: string) => {
-    if (!isAuthenticated) {
-      setAuthPromptMessage('Please log in first to view this profile.');
-      return;
-    }
     if (authorId === user?.id) {
       navigate('/profile');
     } else {
       navigate(`/profile/${authorId}`);
     }
   };
+
 
   const handleCreateComment = async (e: React.FormEvent) => {
     e.preventDefault();

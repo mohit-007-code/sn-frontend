@@ -86,27 +86,22 @@ export const FeedPage: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div className="space-y-8">
-      {/* Feed Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-white" />
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              Feed
-            </h1>
-            {total > 0 && (
-              <span className="text-xs font-mono bg-zinc-900 text-zinc-400 px-2.5 py-0.5 rounded-full border border-zinc-800">
-                {total} {total === 1 ? 'post' : 'posts'}
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-zinc-400 mt-1">
-            Discover the latest posts and updates from the community.
-          </p>
+    <div className="space-y-6">
+      {/* Twitter-style Sticky Feed Page Header */}
+      <div className="sticky top-0 z-30 bg-black/85 backdrop-blur-md px-4 py-3 border-b border-zinc-900 flex items-center justify-between -mx-4 sm:-mx-6 -mt-6 mb-4">
+        <div className="flex items-center gap-2.5">
+          <Sparkles className="w-4 h-4 text-white" />
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white">
+            Home Feed
+          </h1>
+          {total > 0 && (
+            <span className="text-xs font-mono bg-zinc-900 text-zinc-400 px-2 py-0.5 rounded-full border border-zinc-800">
+              {total} {total === 1 ? 'post' : 'posts'}
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
@@ -114,27 +109,20 @@ export const FeedPage: React.FC = () => {
             disabled={isLoading}
             leftIcon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
             aria-label="Refresh feed"
+            className="text-xs h-8 px-2.5 text-zinc-400 hover:text-white"
           >
             Refresh
           </Button>
 
-          {isAuthenticated ? (
+          {isAuthenticated && (
             <Link to="/posts/create">
               <Button
                 variant="primary"
                 size="sm"
                 leftIcon={<PlusCircle className="w-3.5 h-3.5" />}
+                className="text-xs h-8 px-3 font-semibold"
               >
-                Create Post
-              </Button>
-            </Link>
-          ) : (
-            <Link to="/login">
-              <Button
-                variant="secondary"
-                size="sm"
-              >
-                Sign In to Post
+                Post
               </Button>
             </Link>
           )}
@@ -142,6 +130,7 @@ export const FeedPage: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
+
       {isLoading ? (
         <PostListSkeleton count={3} />
       ) : error ? (

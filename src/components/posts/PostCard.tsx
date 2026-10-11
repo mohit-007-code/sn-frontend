@@ -104,17 +104,13 @@ export const PostCard: React.FC<PostCardProps> = ({
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isAuthenticated) {
-      setAuthPromptMessage('Please log in first to view this profile.');
-      return;
-    }
-
     if (isAuthorCurrentUser) {
       navigate('/profile');
     } else {
       navigate(`/profile/${post.user_id}`);
     }
   };
+
 
   const handleLikeToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -202,7 +198,7 @@ export const PostCard: React.FC<PostCardProps> = ({
             }
           }}
           className="flex items-center gap-3 cursor-pointer group focus:outline-none focus-visible:ring-1 focus-visible:ring-white rounded-lg p-1 -m-1 transition-colors"
-          title={isAuthenticated ? 'View profile' : 'Log in to view profile'}
+          title="View profile"
         >
           <Avatar
             src={authorPhoto}
@@ -341,7 +337,13 @@ export const PostCard: React.FC<PostCardProps> = ({
             {likeCount > 0 ? (
               <button
                 type="button"
-                onClick={() => setShowLikesModal(true)}
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    setAuthPromptMessage('Please log in or register to see who liked this post.');
+                    return;
+                  }
+                  setShowLikesModal(true);
+                }}
                 className="font-mono text-zinc-400 hover:text-white hover:underline focus:outline-none"
                 title="View likes"
               >

@@ -40,3 +40,13 @@ export interface FollowUserListResponse {
   total: number;
   has_next: boolean;
 }
+
+export interface PublicUserProfile {
+  id: string;
+  username: string;
+  created_at?: string;
+  profile: UserProfile | null;
+  follower_count?: number;
+  following_count?: number;
+}
+
