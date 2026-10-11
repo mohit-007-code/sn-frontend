@@ -83,16 +83,27 @@ export const ProfilePage: React.FC = () => {
       }
 
       try {
-        const [resolvedUser, followersRes, followingRes, myFollowingRes] = await Promise.all([
-          isOwnProfile && user ? Promise.resolve(user) : usersApi.getUser(targetUserId),
-          usersApi.getFollowers(targetUserId, 1, 20).catch(() => null),
-          usersApi.getFollowing(targetUserId, 1, 1).catch(() => null),
-          !isOwnProfile && user?.id ? usersApi.getFollowing(user.id, 1, 100).catch(() => null) : Promise.resolve(null),
-        ]);
+        const resolvedUser = await usersApi.getUser(targetUserId);
 
         if (!isCancelled) {
           if (resolvedUser) {
             setTargetUser(resolvedUser);
+
+            const userWithStats = resolvedUser as {
+              follower_count?: number;
+              following_count?: number;
+              is_following?: boolean;
+            };
+
+            if (typeof userWithStats.follower_count === 'number') {
+              setFollowerCount(userWithStats.follower_count);
+            }
+            if (typeof userWithStats.following_count === 'number') {
+              setFollowingCount(userWithStats.following_count);
+            }
+            if (typeof userWithStats.is_following === 'boolean') {
+              setIsFollowing(userWithStats.is_following);
+            }
           } else if (!isOwnProfile) {
             // Construct basic profile with id
             setTargetUser({
@@ -100,19 +111,6 @@ export const ProfilePage: React.FC = () => {
               username: 'User',
               profile: null,
             });
-          }
-
-          if (followersRes) {
-            setFollowerCount(followersRes.total);
-          }
-          if (followingRes) {
-            setFollowingCount(followingRes.total);
-          }
-
-          if (!isOwnProfile && user?.id) {
-            const isFollower = followersRes?.items?.some((item) => item.id === user.id) || false;
-            const inMyFollowing = myFollowingRes?.items?.some((item) => item.id === targetUserId) || false;
-            setIsFollowing(isFollower || inMyFollowing);
           }
         }
       } catch (err: unknown) {
@@ -133,6 +131,7 @@ export const ProfilePage: React.FC = () => {
       isCancelled = true;
     };
   }, [targetUserId, isOwnProfile, user]);
+
 
   // Load posts for target user
   useEffect(() => {

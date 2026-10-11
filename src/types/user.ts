@@ -48,5 +48,7 @@ export interface PublicUserProfile {
   profile: UserProfile | null;
   follower_count?: number;
   following_count?: number;
+  is_following?: boolean;
 }
+
 

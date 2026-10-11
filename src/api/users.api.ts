@@ -111,78 +111,17 @@ export const usersApi = {
 
     const lookupPromise = (async () => {
       try {
-        // Query direct public user endpoint first
         const directRes = await apiClient.get<User>(`/api/v1/users/${userId}`).catch(() => null);
         if (directRes?.data) {
           usersApi.registerCachedUser(directRes.data);
           return directRes.data;
         }
-
-        // Fallback: Query followers and following for target user
-        const [followers, following] = await Promise.all([
-          usersApi.getFollowers(userId, 1, 50).catch(() => null),
-          usersApi.getFollowing(userId, 1, 50).catch(() => null),
-        ]);
-
-        if (followers?.items?.length) {
-          followers.items.forEach(usersApi.registerCachedUser);
-        }
-        if (following?.items?.length) {
-          following.items.forEach(usersApi.registerCachedUser);
-        }
-
-        let targetUserInCache = userCache.get(userId);
-        if (targetUserInCache && targetUserInCache.username !== 'User') {
-          return targetUserInCache;
-        }
-
-
-        // Also inspect target user's posts for comments/likes containing their user profile
-        const userPosts = await apiClient
-          .get<{ items: Array<{ id: string; comment_count: number; like_count: number }> }>(
-            `/api/v1/posts/user/${userId}`,
-            { params: { page: 1, page_size: 5 } }
-          )
-          .catch(() => null);
-
-        if (userPosts?.data?.items?.length) {
-          for (const p of userPosts.data.items) {
-            if (p.comment_count > 0) {
-              const comms = await apiClient
-                .get<{ items: Array<{ user?: FollowUserItem }> }>(`/api/v1/posts/${p.id}/comments`, {
-                  params: { page: 1, page_size: 20 },
-                })
-                .catch(() => null);
-              if (comms?.data?.items) {
-                comms.data.items.forEach((c) => {
-                  if (c.user) usersApi.registerCachedUser(c.user);
-                });
-              }
-            }
-
-            if (p.like_count > 0) {
-              const likes = await apiClient
-                .get<{ items: Array<FollowUserItem> }>(`/api/v1/posts/${p.id}/likes`, {
-                  params: { page: 1, page_size: 20 },
-                })
-                .catch(() => null);
-              if (likes?.data?.items) {
-                likes.data.items.forEach(usersApi.registerCachedUser);
-              }
-            }
-
-            targetUserInCache = userCache.get(userId);
-            if (targetUserInCache && targetUserInCache.username !== 'User') {
-              return targetUserInCache;
-            }
-          }
-        }
-
         return userCache.get(userId) || null;
       } finally {
         pendingUserLookups.delete(userId);
       }
     })();
+
 
     pendingUserLookups.set(userId, lookupPromise);
     return lookupPromise;
