@@ -52,14 +52,19 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
     setIsSubmitting(true);
     try {
-      await login({
+      const loggedInUser = await login({
         username_or_email: usernameOrEmail.trim(),
         password,
       });
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate(from, { replace: true });
+        const role = loggedInUser?.role || (loggedInUser as any)?.role?.value;
+        if (role === 'admin' && from === '/') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate(from, { replace: true });
+        }
       }
     } catch (err: unknown) {
       console.error('Login error:', err);

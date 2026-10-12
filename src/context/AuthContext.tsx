@@ -13,7 +13,7 @@ export interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -116,6 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         usersApi.getFollowers(currentUser.id, 1, 50).catch(() => null);
         usersApi.getFollowing(currentUser.id, 1, 50).catch(() => null);
         toast.success('Logged in successfully');
+        return currentUser;
       } catch (err) {
         const errorMessage = parseApiError(err);
         toast.error(errorMessage);

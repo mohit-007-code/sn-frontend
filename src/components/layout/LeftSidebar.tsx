@@ -11,6 +11,7 @@ import {
   LogIn,
   UserPlus,
   Activity,
+  Shield,
 } from 'lucide-react';
 
 export interface LeftSidebarProps {
@@ -92,6 +93,23 @@ export const LeftSidebar: React.FC<LeftSidebarProps> = ({ isHealthy }) => {
                 <UserIcon className="w-5 h-5 flex-shrink-0" />
                 <span className="hidden xl:inline-block">My Profile</span>
               </NavLink>
+
+              {(user?.role === 'admin' || (user as any)?.role?.value === 'admin') && (
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    `flex items-center gap-4 px-3 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none focus:ring-1 focus:ring-amber-400 ${
+                      isActive
+                        ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30'
+                        : 'text-amber-400 hover:text-amber-300 hover:bg-amber-500/10'
+                    }`
+                  }
+                  title="Admin Dashboard"
+                >
+                  <Shield className="w-5 h-5 flex-shrink-0 text-amber-400" />
+                  <span className="hidden xl:inline-block">Admin Panel</span>
+                </NavLink>
+              )}
             </>
           ) : (
             <>

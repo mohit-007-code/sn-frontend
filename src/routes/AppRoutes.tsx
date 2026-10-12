@@ -12,10 +12,28 @@ import EditPostPage from '../pages/posts/EditPostPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
+import AdminRoute from './AdminRoute';
+import AdminLayout from '../layouts/AdminLayout';
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
+import AdminUsersPage from '../pages/admin/AdminUsersPage';
+import AdminPostsPage from '../pages/admin/AdminPostsPage';
+import AdminCommentsPage from '../pages/admin/AdminCommentsPage';
+import AdminCreateAdminPage from '../pages/admin/AdminCreateAdminPage';
 
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* Admin Panel Layout & Routes */}
+      <Route element={<AdminRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/posts" element={<AdminPostsPage />} />
+          <Route path="/admin/comments" element={<AdminCommentsPage />} />
+          <Route path="/admin/create-admin" element={<AdminCreateAdminPage />} />
+        </Route>
+      </Route>
+
       {/* Main App Layout */}
       <Route element={<AppLayout />}>
         {/* Public Feed & Public Profiles */}
